@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="{% static '/images/favicon.png'%}" type="image/x-icon">
+  <link rel="stylesheet" type='text/css' href="{% static '/css/style2.css'%}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <title>Health Website</title>
+</head>
+<body>
+    
+<!-- Header Background Container Start -->
+<header class="container-fluid" id="headerback">
+    <!-- Navigation Background Container Start -->
+    <div class="container-fluid" id="navigationback">
+        <!-- Navigation Container Start -->
+        <div class="container" id="navcontainer">
+            <!-- Navigation Row Start -->
+            <div class="row" id="navigationrow">
+                <!-- Site Logo Column Start -->
+                <div class="col-sm-3" id="logo">
+                    <a href="index.html"><img src="{% static '/images/logo.jpg'%}" alt="SiteLogo"></a>
+                </div>
+                <!-- Site Logo Column End -->
+
+
+            </div>
+            <!-- Navigation Row End -->
+        </div>
+        <!-- Navigation Container End -->
+    </div>
+    <!-- Navigation Background Container Start -->
+
+
+    <!-- Carousel Background Container Start -->
+    <div class="container-fluid" id="carouselback">
+
+        <!-- Carousel Container Start -->
+        <div class="container" id="carouselcontainer">
+
+            <!-- Carousel Start -->
+            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+          
+              <!-- Wrapper for slides -->
+              <div class="carousel-inner">
+                <div class="item active">
+                  <h2>Hello</h2>
+                  <h2>And Welcome</h2>
+                  <h3>We help with your diet plan</h3>
+                  <p>We are a team of dedicated professionals committed to helping individuals</br> achieve their health and wellness goals through personalized nutrition plans</br> tailored to their unique needs. </p>
+                    <a href="/predict" class="btn btn-info" role="button">Get Started</a>
+                </div>
+          
+                <div class="item">
+                    <h2>Greetings</h2>
+                    <h2>and a warm welcome!</h2>
+                    <h3>With the power of ML we help you</h3>
+                    <p>Our goal is to provide effective, sustainable solutions</br> that fit our clients' lifestyles and preferences.</p>
+                    <a href="/predict" class="btn btn-info" role="button">Get Started</a>
+                </div>
+              
+                <div class="item">
+                    <h2>Hello</h2>
+                    <h2>and salutations!</h2>
+                    <h3>We help you to get to your goals</h3>
+                    <p>we use machine learning to create personalized diet plans </br> based on your body composition and dietary preferences. Our cutting-edge technology ensures that you receive a customized plan that meets your individual needs, helping you to achieve your health and wellness goals with precision and accuracy.</p>
+                    <a href="/predict" class="btn btn-info" role="button">Get Started</a>
+
+                </div>
+              </div>
+          
+              <!-- Indicators -->
+              <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+              </ol>
+
+              <!-- Left and right controls -->
+              <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+                <span class="sr-only">Next</span>
+              </a>
+            </div>
+            <!-- Carousel End -->
+
+          </div>
+        <!-- Carousel Container End -->
+    </div>
+    <!-- Carousel Background Container End -->
+</header>
+<!-- Header Background Container End -->
+
+
+<!-- About Us Background Container Start -->
+<div class="container-fluid" id="aboutusback">
+    <!-- About Us Container Start -->
+    <div class="container" id="aboutuscontainer">
+        <!-- About Us Row Start -->
+        <div class="row">
+            <!-- About Us Column Start -->
+            <div class="col-sm-12">
+                <h2 class="text-center center-block">About Us</h2>
+                <img src="{% static '/images/about.jpg'%}" alt="AboutPhoto" class="center-block" style="width: 66%;">
+                <h3 class="text-center">Welcome to our website! We are dedicated to helping you achieve your health and wellness goals through personalized nutrition plans tailored to your body fat percentage.
+
+Why is body fat percentage important?
+
+Body fat percentage is an important measure of overall health and fitness. It indicates the amount of fat that your body is carrying relative to your total body weight. Too much body fat can increase your risk of chronic diseases such as heart disease, diabetes, and certain types of cancer.
+
+How do we create personalized diet plans?
+
+Our approach to creating personalized diet plans involves the following steps:
+
+Assessment of body fat percentage: We use specialized tools to accurately measure your body fat percentage. This information helps us to determine your individualized calorie and macronutrient needs.
+
+Consultation: We consult with you to determine your goals, preferences, and any health conditions that may impact your dietary needs.
+
+Our personalized diet plans are designed to help you lose body fat, build muscle, improve your overall health, and achieve your goals. We work with you to create a sustainable plan that fits your lifestyle and preferences, and we are committed to your success.
+
+Get started today and take the first step towards achieving your health and wellness goals!</h3>
+
+            </div>
+            <!-- About Us Column End -->
+        </div>
+        <!-- About Us Row End -->
+    </div>
+    <!-- About Us Container End -->
+</div>
+<!-- About Us Background Container End -->
+
+
+<!-- Why You Need A Coach Container Start -->
+<div class="container" id="whyyouneedcontainer">
+    <!-- Why You Need A Coach Title Row Start -->
+    <div class="row" id="whyyouneedtitlerow">
+        <!-- Title Column Start -->
+        <div class="col-sm-12">
+            <h2 class="text-center center-block"><span>Why</span> You Need A Personalized Diet Plan?</h2>
+            <h3 class="text-center center-block">we ensures that the plan is tailored to your unique needs</h3>
+        </div>
+        <!-- Title Column End -->
+    </div>
+    <!-- Why You Need A Coach Title Row End -->
+
+
+    <!-- Top Images Row Start -->
+    <div class="row" id="topimagesrow">
+        <!-- First Image & Text Column Start -->
+        <div class="col-sm-6">
+            <img src="{% static '/images/1.png'%}" alt="Cup">
+            <p>A personalized diet plan can increase your motivation and accountability by providing you with clear goals, regular feedback, and ongoing support to help you stay on track and achieve your desired outcomes.</p>
+        </div>
+        <!-- First Image & Text Column End -->
+
+        <!-- Second Image & Text Column Start -->
+        <div class="col-sm-6">
+            <img src="{% static '/images/2.png'%}" alt="Body">
+            <p> A personalized diet plan can help you achieve and maintain a healthy weight by providing you with a balanced and nutritious diet that meets your individualized calorie and macronutrient needs.</p>
+        </div>
+    </div>
+    <div class="row" id="bottomimagesrow">
+        <div class="col-sm-6">
+            <img src="{% static '/images/
+            3.png'%}" alt="Weight">
+            <p>A personalized diet plan can help improve your overall health by providing you with the necessary nutrients and reducing your risk of chronic diseases such as heart disease, diabetes, and certain types of cancer.</p>
+        </div>
+        <div class="col-sm-6">
+            <img src="{% static '/images/4.png'%}" alt="FourthImage">
+            <p>A personalized diet plan can help you develop better eating habits by guiding you towards healthier food choices and portion sizes, and by helping you to overcome common obstacles such as cravings and emotional eating.</p>
+        </div>
+    </div>
+</div>
+<div class="container-fluid" id="getresultsback">
+        <div class="row" id="getresultsrow">
+            <div class="col-sm-6" id="getresultstexts">
+                <h2>GET</h2>
+                <h2>PERSONALIZED</h2>
+                <h2>DIET PLAN</h2>
+                <p>We provide personalized diet plans based on your body fat percentage to help you achieve your health and wellness goals. We assess your body fat percentage, consult with you to determine your goals and preferences, customize a diet plan to meet your individualized calorie and macronutrient needs, and provide ongoing support and follow-up to ensure your success. Our plans are designed to help you lose body fat, build muscle, and improve your overall health, all while fitting your lifestyle and preferences. Get started today and take the first step towards achieving your goals!</p>
+                <a href="/predict" class="btn btn-info" role="button">GET STARTED</a>
+            </div>
+            <div class="col-sm-6" id="getresultsimage">
+                <img src="{% static '/images/request.jpg'%}" alt="Girl" style="width: 100%;">
+            </div>
+
+        </div>
+
+</div>
+
+<div class="container-fluid" id="footerback">
+
+    <footer class="container">
+        <h2 class="text-center center-block">HEALTH</h2>
+
+    </footer>
+
+</div>
+
+
+</body>
+</html>

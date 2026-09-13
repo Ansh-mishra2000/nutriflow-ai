@@ -1,0 +1,745 @@
+/* Fonts Start */
+@font-face{
+    font-family: Poppins;
+    src: url('../fonts/Poppins-Regular.ttf');
+}
+
+@font-face{
+    font-family: PoppinsLight;
+    src: url('../fonts/Poppins-Light.ttf');
+}
+
+@font-face {
+    font-family: PoppinsBold;
+    src: url('../fonts/Poppins-Bold.ttf');
+}
+
+@font-face {
+    font-family: PoppinsBlack;
+    src: url('../fonts/Poppins-Black.ttf');
+}
+/* Fonts End */
+
+
+/* ***** Header Container Start ***** */
+#headerback{
+    padding: 0;
+}
+
+/* *** Navigation Start *** */
+#navigationback{
+    background-color: #181918;
+    padding: 10px 0;
+    width: 100%;
+}
+
+#navigationbar{
+    height: 49px;
+}
+
+#navtop{
+    background-color: transparent;
+    border: none;
+}
+
+#navigation ul li a{
+    font-family: Poppins;
+    font-size: 16px;
+    color: white;
+    line-height: 28px;
+    padding: 10px 18px;
+    transition: .6s ease-in;
+}
+
+#navigation ul li a.active{
+    color: #18bb18;
+}
+
+#navigation ul li a:hover{
+    color: #18bb18;
+}
+
+/* *** Navigation End *** */
+
+
+/* *** Carousel Container Start *** */
+#carouselback{
+    background-image: url('../images/banner.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 746px;
+}
+
+#myCarousel{
+    min-height: 746px;
+    padding-top: 125px;
+    padding-left: 95px;
+}
+
+#myCarousel h2{
+    font-family: PoppinsBold;
+    font-size: 76px;
+    color: #120f0f;
+    margin: 10px 0 0;
+    letter-spacing: 2px;
+}
+
+#myCarousel h2:first-of-type{
+    color: #18bb18;
+}
+
+#myCarousel h3{
+    font-family: Poppins;
+    font-size: 35px;
+    color: #2f2f2f;
+    padding-bottom: 35px;
+    margin-bottom: 0;
+}
+
+#myCarousel p{
+    font-family: PoppinsLight;
+    font-size: 17px;
+    color: #2f2f2f;
+    width: 73%;
+    line-height: 30px;
+    padding-bottom: 40px;
+}
+
+#myCarousel a{
+    font-family: Poppins;
+    font-size: 15px;
+    background-color: #120f0f;
+    color: white;
+    padding: 18px 60px;
+    margin-right: 30px;
+    border: none;
+    border-radius: 0;
+    transition: .5s ease-in;
+}
+
+#myCarousel a:hover{
+    background-color: #18bb18;
+}
+
+#myCarousel a.left.carousel-control{
+    display: none;
+}
+
+#myCarousel a.right.carousel-control{
+    display: none;
+}
+
+#myCarousel ol.carousel-indicators{
+    text-align: left;
+    width: 10%;
+    float: left;
+    margin-left: 0;
+    left: 100px;
+}
+
+#myCarousel ol li{
+    background-color: black;
+    width: 20px;
+    height: 20px;
+}
+
+#myCarousel ol li.active{
+    background-color: #18bb18;
+}
+/* *** Carousel Container End *** */
+
+/* ***** Header Container End ***** */
+
+
+/* ***** About Us Background Container Start ***** */
+#aboutusback{
+    background-image: url('../images/about-bg.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    background-position: center center;
+    margin-top: 90px;
+    margin-bottom: 90px;
+}
+
+#aboutuscontainer h2{
+    font-family: Poppins;
+    font-size: 60px;
+    color: #111;
+    padding: 5px 0;
+    border: 1px solid #12dc12;
+    width: 30%;
+    line-height: 109px;
+}
+
+#aboutuscontainer img{
+    padding-top: 40px;
+}
+
+#aboutuscontainer h3{
+    font-family: PoppinsLight;
+    font-size: 17px;
+    color: #555554;
+    line-height: 32px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+#aboutuscontainer a{
+    width: 20%;
+    font-family: Poppins;
+    font-size: 17px;
+    color: white;
+    background-color: #000;
+    text-align: center;
+    padding: 20px 0;
+    border: none;
+    border-radius: 0;
+    transition: .8s ease-in;
+}
+
+#aboutuscontainer a:hover{
+    background-color: #18bb18;
+}
+/* ***** About Us Background Container End ***** */
+
+
+/* ***** Why You Need A Coach Container Start ***** */
+#whyyouneedcontainer{
+    padding-bottom: 90px;
+}
+
+/* Title Row Start */
+#whyyouneedtitlerow{
+    padding-bottom: 65px;
+}
+
+#whyyouneedtitlerow h2{
+    font-family: Poppins;
+    font-size: 40px;
+    color: #120f0f;
+    margin-bottom: 0;
+}
+
+#whyyouneedtitlerow h2 span{
+    color: #18bb18;
+}
+
+#whyyouneedtitlerow h3{
+    font-family: Poppins;
+    font-size: 20px;
+    color: #383838;
+}
+/* Title Row End */
+
+
+/* Top Images Row Start */
+#topimagesrow .col-sm-6{
+    padding-bottom: 60px;
+}
+
+#topimagesrow img{
+    float: left;
+    padding-right: 34px;
+}
+
+#topimagesrow p{
+    font-family: PoppinsLight;
+    font-size: 27px;
+    color: #151108;
+}
+/* Top Images Row End */
+
+/* Bottom Images Row Start */
+#bottomimagesrow .col-sm-6{
+    padding-bottom: 60px;
+}
+#bottomimagesrow img{
+    float: left;
+    padding-right: 34px;
+}
+
+#bottomimagesrow p{
+    font-family: PoppinsLight;
+    font-size: 27px;
+    color: #151108;
+}
+
+/* Bottom Images Row End */
+
+/* Read More Button Start */
+#whyyouneedcontainer a{
+    width: 20%;
+    font-family: Poppins;
+    font-size: 17px;
+    color: white;
+    background-color: #000;
+    text-align: center;
+    padding: 20px 0;
+    border: none;
+    border-radius: 0;
+    transition: .8s ease-in;
+}
+
+#whyyouneedcontainer a:hover{
+    background-color: #18bb18;
+}
+/* Read More Button End */
+
+/* ***** Why You Need A Coach Container End ***** */
+
+
+/* ***** Get Results Background Container Start ***** */
+#getresultsback{
+    background-color: #18bb18;
+}
+
+#getresultsrow{
+    margin-right: -15px;
+}
+
+/* *** Get Results Texts Column Start *** */
+#getresultstexts{
+    padding: 32px 0 25px 190px;
+}
+
+#getresultstexts h2{
+    font-family: PoppinsBold;
+    font-size: 60px;
+    color: #14120f;
+}
+
+#getresultstexts h2:nth-child(2){
+    color: white;
+}
+
+#getresultstexts p{
+    font-family: PoppinsLight;
+    font-size: 17px;
+    line-height: 32px;
+    color: white;
+}
+
+/* Get Started Button Start */
+#getresultstexts a{
+    width: 42%;
+    font-family: Poppins;
+    font-size: 14px;
+    color: white;
+    background-color: #000;
+    text-align: center;
+    padding: 20px 0;
+    border: none;
+    border-radius: 0;
+    transition: .8s ease-in;
+    margin-top: 30px;
+}
+
+#getresultstexts a:hover{
+    background-color: #fff;
+    color: #120f0f;
+}
+/* Get Started Button End */
+
+/* *** Get Results Texts Column End *** */
+
+/* *** Get Results Image Column Start *** */
+#getresultsimage{
+    padding-right: 0;
+}
+/* *** Get Results Image Column End *** */
+
+/* ***** Get Results Background Container End ***** */
+
+
+/* ***** Contact Us Container Start ***** */
+#contactuscontainer{
+    padding-top: 90px;
+    padding-bottom: 90px;
+}
+
+#contactuscontainer h2{
+    font-family: PoppinsBold;
+    font-size: 60px;
+    color: #010808;
+    margin-bottom: 50px;
+}
+
+/* *** Form Elements Start *** */
+#contactusrow input{
+    font-family: Poppins;
+    font-size: 16px;
+    color: #495057;
+    line-height: 24px;
+    padding: 35px 19px;
+    border-radius: 40px;
+    border: 1px solid #b1b0b0;
+    margin-bottom: 35px;
+}
+
+#contactusrow input ::placeholder{
+    color: #010808;
+}
+
+#contactusrow textarea{
+    width: 100%;
+    font-family: Poppins;
+    font-size: 16px;
+    color: #495057;
+    border-radius: 40px;
+    border: 1px solid #b1b0b0;
+    padding: 73px 19px 35px;
+    margin-bottom: 35px;
+}
+
+#contactusrow input[type=submit]{
+    width: 38%;
+    background-color: #000;
+    font-family: Poppins;
+    font-size: 26px;
+    color: white;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    transition: .8s ease-in;
+    margin-bottom: 0;
+}
+
+#contactusrow input[type=submit]:hover{
+    background-color: #18bb18;
+}
+/* *** Form Elements End *** */
+
+/* ***** Contact Us Container End ***** */
+
+
+/* ***** Footer Background Container Start ***** */
+#footerback{
+    padding-top: 45px;
+    padding-bottom: 36px;
+    background-color: #032703;
+}
+
+footer h2{
+    font-family: PoppinsBlack;
+    font-size: 31px;
+    color: white;
+    padding: 25px 0;
+    border: 1px solid #ddd;
+    width: 60%;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+/* Footer Row Start */
+#footerrow{
+    font-family: Poppins;
+    font-size: 17px;
+    color: white;
+}
+
+#footerrow span{
+    float: left;
+    padding-right: 10px;
+    font-size: 25px;
+    line-height: 68px;
+}
+
+#footerrow a{
+    color: #18bb18;
+}
+
+#footerrow a:first-of-type{
+    color: white;
+}
+
+footer .col-sm-3:last-child span{
+    transition: .5s ease-in;
+}
+
+footer .col-sm-3:last-child span:hover{
+    color: white;
+}
+/* Footer Row End */
+
+/* ***** Footer Background Container End ***** */
+
+
+/* ***** Copyright Container Start ***** */
+#copyright{
+    padding: 10px 0;
+}
+
+#copyright p{
+    font-family: Poppins;
+    font-size: 16px;
+    color: #666;
+}
+
+#copyright p a{
+    color: #666;
+    transition: .8s ease-in;
+}
+
+#copyright p a:hover{
+    color: #18bb18;
+    text-decoration: none;
+}
+/* ***** Copyright Container End ***** */
+
+@media only screen and (max-width:580px){
+
+    /* ***** Header Start ***** */
+    
+    /* *** Navigation Start *** */
+    #navigationback{
+        padding-bottom: 0;
+    }
+
+    #navigationbar{
+        width: 75%;
+        float: left;
+        min-height: 50px !important;
+    }
+
+    #logo{
+        width: 25%;
+        min-height: 40px;
+        float: left;
+        display: flex;
+        align-items: center;
+    }
+    
+    #logo img{
+        width: 100%;
+    }
+
+    #navbarheader{
+        background-color: #18bb18;
+    }
+    
+    #navigation ul{
+        background-color: white;
+        margin-top: 0;
+        position: relative;
+        z-index: 999;
+    }
+
+    #navigation ul li a{
+        font-size: 12px;
+        color: #383838;
+        border-bottom: 1px solid #ccc;
+        width: 92%;
+        font-weight: bold;
+    }
+
+    #navigation ul li:nth-of-type(7){
+        display: none;
+    }
+
+    #navigation ul li:nth-of-type(8){
+        display: none;
+    }
+
+    #navtoggle{
+        background-color: transparent;
+        border: none;
+        padding: 2px 5px;
+    }
+
+    #navtoggle .icon-bar{
+        border: 2px solid white;
+    }
+    /* *** Navigation End *** */
+
+
+    /* *** Carousel Start *** */
+    #carouselback{
+        min-height: 1px !important;
+    }
+
+    #myCarousel{
+        padding-left: 0;
+        padding-top: 20px;
+        min-height: max-content;
+    }
+    #myCarousel h2{
+        font-size: 40px;
+    }
+
+    #myCarousel h3{
+        font-size: 22px;
+    }
+
+    #myCarousel p{
+        width: 100%;
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    #myCarousel a{
+        padding: 10px 40px;
+        margin-right: 20px;
+    }
+
+    #myCarousel ol.carousel-indicators{
+        width: 20%;
+        position: relative;
+        left: 0;
+        margin-top: 40px;
+    }
+
+    #myCarousel ol li{
+        width: 14px;
+        height: 14px;
+    }
+    /* *** Carousel End *** */
+
+    /* ***** Header End ***** */
+
+
+    /* ***** About Us Container Start ***** */
+    #aboutuscontainer h2{
+        width: 90%;
+    }
+
+    #aboutuscontainer a{
+        width: 40%;
+    }
+    /* ***** About Us Container End ***** */
+
+
+    /* ***** Why You Need A Coach Container Start ***** */
+
+    /* Title Row Start */
+    #whyyouneedtitlerow h3{
+        width: 90%;
+        line-height: 28px;
+    }
+    /* Title Row Start */
+
+    /* Images & Text Row Start */
+    #topimagesrow .col-sm-6{
+        padding-bottom: 60px;
+    }
+
+    #topimagesrow p{
+        font-size: 26px;
+    }
+
+    #bottomimagesrow .col-sm-6{
+        padding-bottom: 60px;
+    }
+
+    #bottomimagesrow p{
+        font-size: 26px;
+    }
+    /* Images & Text Row End */
+
+    /* Read More Button Start */
+    #whyyouneedcontainer a{
+        width: 40%;
+    }
+    /* Read More Button End */
+
+    /* ***** Why You Need A Coach Container Start ***** */
+
+
+    /* ***** Get Results 100% Guaranteed Container Start ***** */
+    #getresultsback{
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #getresultsrow{
+        margin-right: 15px;
+    }
+
+    /* Get Results Texts Column Start */
+    #getresultstexts{
+        padding: 32px 15px;
+        margin: 0 15px;
+    }
+    /* Get Results Texts Column End */
+
+    /* Get Results Image Column Start */
+    #getresultsimage{
+        padding: 0;
+        max-width: 580px !important;
+    }
+
+    #getresultsimage img{
+        width: 100% !important;
+    }
+    /* Get Results Image Column End */
+
+    /* ***** Get Results 100% Guaranteed Container End ***** */
+
+
+    /* ***** Contact Us Container Start ***** */
+    #contactusrow input{
+        width: 100%;
+    }
+
+    #contactusrow input[type=submit]{
+        width: 70%;
+        font-size: 20px;
+    }
+    /* ***** Contact Us Container End ***** */
+
+
+    /* ***** Footer Start ***** */
+    footer h2{
+        width: 90%;
+    }
+
+    footer .col-sm-3{
+        overflow: hidden;
+        margin-bottom: 20px;
+        width: 55%;
+        margin: 0 auto 20px;
+    }
+
+    footer .col-sm-3:last-child{
+        display: flex;
+        justify-content: space-between;
+    }
+    /* ***** Footer End ***** */
+
+
+    /* ***** Copyright Start ***** */
+    #copyrightcolumn{
+        padding:0;
+    }
+
+    #copyrightrow{
+        margin:0;
+    }
+    /* ***** Copyright End ***** */
+}
+
+
+@media only screen and (max-width:420px){
+    #getresultstexts h2{
+        font-size: 40px;
+        text-align: center;
+    }
+
+    #getresultstexts p{
+        width: 100%;
+    }
+}
+
+
+@media only screen and (max-width:390px){
+    #myCarousel a{
+        padding: 15px 35px;
+        margin-right: 8px;
+    }
+
+    #getresultsrow{
+        margin-right: 0;
+    }
+
+    #getresultstexts a{
+        margin-left: 90px;
+    }
+}

@@ -1,0 +1,897 @@
+from sqlalchemy.orm import Session
+from app.db.session import engine, Base, SessionLocal
+from app.models.food_item import FoodItem
+from app.models.user import User
+from app.core.security import get_password_hash
+
+SAMPLE_MEALS = [
+    # =========================================================================
+    # BREAKFAST (15 Diverse Options)
+    # =========================================================================
+    {
+        "name": "Avocado & Poached Egg Protein Sourdough",
+        "category": "breakfast",
+        "description": "Toasted artisanal sourdough topped with crushed hass avocado, organic poached eggs, chia seeds, and microgreens.",
+        "calories": 420.0,
+        "protein_g": 24.0,
+        "carbs_g": 38.0,
+        "fat_g": 18.0,
+        "price": 249.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 12,
+        "ingredients": "Sourdough bread, 2 Eggs, Hass Avocado, Lemon juice, Chia seeds, Sea salt"
+    },
+    {
+        "name": "Greek Yogurt & Mixed Berry Power Bowl",
+        "category": "breakfast",
+        "description": "Thick strained Greek yogurt topped with fresh blueberries, raspberries, raw honey, and organic almond butter.",
+        "calories": 350.0,
+        "protein_g": 28.0,
+        "carbs_g": 32.0,
+        "fat_g": 12.0,
+        "price": 199.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 8,
+        "ingredients": "Greek Yogurt 0%, Blueberries, Raspberries, Raw Honey, Almonds, Flaxseeds"
+    },
+    {
+        "name": "Classic High-Protein Oats & Whey",
+        "category": "breakfast",
+        "description": "Rolled oats cooked in unsweetened almond milk blended with vanilla isolate protein, banana slices, and cinnamon.",
+        "calories": 480.0,
+        "protein_g": 35.0,
+        "carbs_g": 62.0,
+        "fat_g": 9.0,
+        "price": 189.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1584776296944-ab6fb57b0bdd?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 10,
+        "ingredients": "Rolled oats, Whey isolate, Almond milk, Banana, Cinnamon, Walnuts"
+    },
+    {
+        "name": "Tofu Scramble & Roasted Sweet Potato Hash",
+        "category": "breakfast",
+        "description": "Turmeric spiced crumbled tofu with baby spinach, cherry tomatoes, and crispy roasted sweet potato cubes.",
+        "calories": 390.0,
+        "protein_g": 22.0,
+        "carbs_g": 45.0,
+        "fat_g": 14.0,
+        "price": 219.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 15,
+        "ingredients": "Firm tofu, Sweet potato, Spinach, Cherry tomatoes, Nutritional yeast, Olive oil"
+    },
+    {
+        "name": "High-Protein Moong Dal & Paneer Chilla",
+        "category": "breakfast",
+        "description": "Crispy golden yellow moong dal crepes stuffed with spiced grated paneer, fresh coriander, and mint-coriander chutney.",
+        "calories": 410.0,
+        "protein_g": 26.0,
+        "carbs_g": 42.0,
+        "fat_g": 14.0,
+        "price": 179.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 14,
+        "ingredients": "Moong dal batter, Low-fat Paneer, Ginger, Green chili, Mint chutney, Mustard oil"
+    },
+    {
+        "name": "Paneer Bhurji with 100% Multigrain Toast",
+        "category": "breakfast",
+        "description": "Scrambled cottage cheese tossed with caramelized onions, tomatoes, and bell peppers, paired with toasted multigrain bread.",
+        "calories": 460.0,
+        "protein_g": 30.0,
+        "carbs_g": 36.0,
+        "fat_g": 22.0,
+        "price": 229.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 12,
+        "ingredients": "Fresh Paneer, Multigrain bread, Tomatoes, Onions, Green chillies, Ghee"
+    },
+    {
+        "name": "Masala 3-Egg Omelette & Artisanal Sourdough",
+        "category": "breakfast",
+        "description": "Fluffy organic eggs whisked with diced onions, tomatoes, green chillies, and cilantro, served with warm sourdough toast.",
+        "calories": 430.0,
+        "protein_g": 28.0,
+        "carbs_g": 28.0,
+        "fat_g": 21.0,
+        "price": 199.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 10,
+        "ingredients": "3 Free-range eggs, Sourdough, Red onion, Tomato, Cilantro, Olive oil"
+    },
+    {
+        "name": "Nutty Banana & Chia Seed Oatmeal Bowl",
+        "category": "breakfast",
+        "description": "Creamy steel-cut oats topped with caramelized banana slices, crushed almonds, chia seeds, and pure maple drizzle.",
+        "calories": 440.0,
+        "protein_g": 18.0,
+        "carbs_g": 68.0,
+        "fat_g": 12.0,
+        "price": 189.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1517673400267-0251440c45dc?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 10,
+        "ingredients": "Steel-cut oats, Oat milk, Ripe banana, California almonds, Chia seeds, Maple syrup"
+    },
+    {
+        "name": "Steamed Oats Idli with Sambar & Coconut Chutney",
+        "category": "breakfast",
+        "description": "Fluffy steamed oats and semolina idlis served with vegetable-rich lentil sambar and fresh mint-coconut chutney.",
+        "calories": 340.0,
+        "protein_g": 16.0,
+        "carbs_g": 58.0,
+        "fat_g": 4.0,
+        "price": 169.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 15,
+        "ingredients": "Rolled oats powder, Rava, Carrots, Lentil sambar, Coconut chutney, Curry leaves"
+    },
+    {
+        "name": "Smoked Chicken Breast & Egg White Wrap",
+        "category": "breakfast",
+        "description": "Thin whole wheat tortilla packed with grilled smoked chicken breast, fluffy egg whites, baby spinach, and tzatziki.",
+        "calories": 450.0,
+        "protein_g": 42.0,
+        "carbs_g": 32.0,
+        "fat_g": 14.0,
+        "price": 279.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 12,
+        "ingredients": "Whole wheat tortilla, Smoked chicken breast, Egg whites, Baby spinach, Greek yogurt tzatziki"
+    },
+    {
+        "name": "Almond Butter & Berry Protein French Toast",
+        "category": "breakfast",
+        "description": "Brioche bread dipped in vanilla cinnamon egg batter, topped with creamy almond butter, fresh strawberries, and blueberries.",
+        "calories": 490.0,
+        "protein_g": 25.0,
+        "carbs_g": 54.0,
+        "fat_g": 18.0,
+        "price": 239.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 12,
+        "ingredients": "Brioche toast, 2 Eggs, Whey protein, Almond butter, Strawberries, Blueberries"
+    },
+    {
+        "name": "Sprouted Moong & Poha Power Bowl",
+        "category": "breakfast",
+        "description": "Traditional flattened rice tempered with mustard seeds, roasted peanuts, steamed sprouted green moong, and fresh lemon.",
+        "calories": 380.0,
+        "protein_g": 18.0,
+        "carbs_g": 62.0,
+        "fat_g": 7.0,
+        "price": 159.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 10,
+        "ingredients": "Flattened rice (Poha), Sprouted moong, Roasted peanuts, Mustard seeds, Curry leaves, Lemon"
+    },
+    {
+        "name": "Keto Avocado Bacon & Poached Egg Bowl",
+        "category": "breakfast",
+        "description": "Fresh sliced Hass avocado, crispy bacon strips, poached eggs, and microgreens tossed in cold-pressed extra virgin olive oil.",
+        "calories": 510.0,
+        "protein_g": 32.0,
+        "carbs_g": 8.0,
+        "fat_g": 38.0,
+        "price": 319.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 10,
+        "ingredients": "Hass avocado, 2 Poached eggs, Crispy bacon, Microgreens, Extra virgin olive oil"
+    },
+    {
+        "name": "Overnight Chia & Soy Milk Parfait",
+        "category": "breakfast",
+        "description": "Organic chia seeds bloomed in rich vanilla soy milk layered with crushed walnuts, kiwi, and passion fruit compote.",
+        "calories": 320.0,
+        "protein_g": 19.0,
+        "carbs_g": 38.0,
+        "fat_g": 10.0,
+        "price": 189.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 5,
+        "ingredients": "Organic chia seeds, Soy milk, Kiwi slices, Crushed walnuts, Plant protein powder"
+    },
+    {
+        "name": "Spinach Mushroom Keto Scramble with Avocado",
+        "category": "breakfast",
+        "description": "Sautéed button mushrooms and baby spinach scrambled with 3 eggs and melted cheddar, garnished with avocado cubes.",
+        "calories": 360.0,
+        "protein_g": 24.0,
+        "carbs_g": 14.0,
+        "fat_g": 22.0,
+        "price": 219.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 10,
+        "ingredients": "3 Eggs, Button mushrooms, Baby spinach, Mature cheddar, Hass avocado, Butter"
+    },
+
+    # =========================================================================
+    # LUNCH (15 Diverse Options)
+    # =========================================================================
+    {
+        "name": "Mediterranean Grilled Salmon & Quinoa Bowl",
+        "category": "lunch",
+        "description": "Wild-caught Atlantic salmon fillet over fluffy tri-color quinoa, English cucumbers, kalamata olives, and lemon herb dressing.",
+        "calories": 620.0,
+        "protein_g": 44.0,
+        "carbs_g": 52.0,
+        "fat_g": 26.0,
+        "price": 449.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 20,
+        "ingredients": "Wild salmon, Tri-color quinoa, Cucumbers, Cherry tomatoes, Kalamata olives, Extra virgin olive oil"
+    },
+    {
+        "name": "Grilled Lemon Herb Chicken & Brown Rice",
+        "category": "lunch",
+        "description": "Tender grilled chicken breast served with steamed brown rice, roasted broccoli florets, and a light garlic-herb sauce.",
+        "calories": 540.0,
+        "protein_g": 48.0,
+        "carbs_g": 56.0,
+        "fat_g": 13.0,
+        "price": 329.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Chicken breast, Brown basmati rice, Steamed broccoli, Garlic, Olive oil, Oregano"
+    },
+    {
+        "name": "Chickpea & Roasted Veggie Buddha Bowl",
+        "category": "lunch",
+        "description": "Spiced roasted chickpeas, warm quinoa, charred bell peppers, massaged kale, and a creamy tahini garlic dressing.",
+        "calories": 490.0,
+        "protein_g": 20.0,
+        "carbs_g": 68.0,
+        "fat_g": 16.0,
+        "price": 269.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 15,
+        "ingredients": "Organic chickpeas, Quinoa, Red bell pepper, Kale, Tahini, Lemon juice"
+    },
+    {
+        "name": "Paneer Tikka Protein Platter",
+        "category": "lunch",
+        "description": "Tandoori grilled cottage cheese skewers with bell peppers and onions, served with mint chutney and multi-grain roti.",
+        "calories": 560.0,
+        "protein_g": 32.0,
+        "carbs_g": 48.0,
+        "fat_g": 28.0,
+        "price": 289.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 20,
+        "ingredients": "Cottage cheese (Paneer), Bell peppers, Greek yogurt marinade, Spices, Multi-grain flour"
+    },
+    {
+        "name": "High-Protein Soya Chunk Curry & Brown Rice",
+        "category": "lunch",
+        "description": "Juicy textured soya chunks slow-cooked in a rich roasted onion and tomato masala, paired with aromatic jeera brown rice.",
+        "calories": 510.0,
+        "protein_g": 38.0,
+        "carbs_g": 64.0,
+        "fat_g": 10.0,
+        "price": 229.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Nutrela soya chunks, Brown basmati rice, Cumin, Tomatoes, Onions, Garam masala"
+    },
+    {
+        "name": "Amritsari Rajma Masala with Organic Quinoa",
+        "category": "lunch",
+        "description": "Melt-in-mouth Jammu red kidney beans cooked in Punjabi spiced gravy, served over high-protein fluffy quinoa and kachumber.",
+        "calories": 520.0,
+        "protein_g": 24.0,
+        "carbs_g": 78.0,
+        "fat_g": 11.0,
+        "price": 239.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Jammu Rajma, Organic quinoa, Tomatoes, Ginger-garlic, Coriander, Lemon"
+    },
+    {
+        "name": "Palak Paneer with Multigrain Rotis & Salad",
+        "category": "lunch",
+        "description": "Velvety fresh spinach purée with soft cottage cheese cubes, served with two whole wheat multigrain rotis and cucumber salad.",
+        "calories": 550.0,
+        "protein_g": 29.0,
+        "carbs_g": 44.0,
+        "fat_g": 26.0,
+        "price": 279.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 16,
+        "ingredients": "Fresh baby spinach, Low-fat Paneer, Multigrain atta, Garlic, Cumin, Kasuri methi"
+    },
+    {
+        "name": "Tandoori Grilled Chicken Breast & Salad Thali",
+        "category": "lunch",
+        "description": "Smoky char-grilled chicken breast marinated in hung curd and tandoori spices, paired with a colorful garden crunch salad.",
+        "calories": 530.0,
+        "protein_g": 52.0,
+        "carbs_g": 22.0,
+        "fat_g": 18.0,
+        "price": 349.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 20,
+        "ingredients": "Chicken breast 250g, Hung curd, Kashmiri chili, Lemon juice, Garden salad, Mint dip"
+    },
+    {
+        "name": "Tofu & Edamame Teriyaki Brown Rice Bowl",
+        "category": "lunch",
+        "description": "Pan-seared organic tofu cubes and tender green edamame beans tossed in light ginger teriyaki sauce over steamed brown rice.",
+        "calories": 480.0,
+        "protein_g": 28.0,
+        "carbs_g": 60.0,
+        "fat_g": 14.0,
+        "price": 299.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 16,
+        "ingredients": "Firm tofu, Shelled edamame, Brown rice, Low-sodium tamari, Sesame seeds, Broccoli"
+    },
+    {
+        "name": "Homestyle Egg Curry (3 Eggs) & Jeera Rice",
+        "category": "lunch",
+        "description": "Three boiled eggs simmered in a spiced onion-tomato homestyle gravy, served with fragrant cumin-infused basmati rice.",
+        "calories": 540.0,
+        "protein_g": 27.0,
+        "carbs_g": 58.0,
+        "fat_g": 20.0,
+        "price": 249.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 15,
+        "ingredients": "3 Hard boiled eggs, Basmati rice, Cumin seeds, Tomato curry, Ginger, Coriander"
+    },
+    {
+        "name": "Keto Grilled Butter Paneer & Herb Cauliflower Rice",
+        "category": "lunch",
+        "description": "Golden grilled cottage cheese cubes in rich makhani butter reduction served over freshly grated herb cauliflower rice.",
+        "calories": 580.0,
+        "protein_g": 28.0,
+        "carbs_g": 12.0,
+        "fat_g": 44.0,
+        "price": 319.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 15,
+        "ingredients": "Paneer 200g, Cauliflower rice, Butter, Fresh cream, Garam masala, Kasuri methi"
+    },
+    {
+        "name": "Keto Garlic Butter Chicken Thighs & Asparagus",
+        "category": "lunch",
+        "description": "Crispy-skinned boneless chicken thighs pan-roasted with fresh rosemary garlic butter and tender steamed asparagus.",
+        "calories": 590.0,
+        "protein_g": 46.0,
+        "carbs_g": 8.0,
+        "fat_g": 40.0,
+        "price": 369.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Chicken thighs, Asparagus spears, Garlic cloves, Grass-fed butter, Parsley"
+    },
+    {
+        "name": "Dal Tadka & Steamed Brown Rice with Cucumber Salad",
+        "category": "lunch",
+        "description": "Homestyle yellow arhar dal tempered with cumin, garlic, and hing, paired with brown rice and refreshing cucumber ribbons.",
+        "calories": 460.0,
+        "protein_g": 20.0,
+        "carbs_g": 72.0,
+        "fat_g": 9.0,
+        "price": 209.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 14,
+        "ingredients": "Toor dal, Brown rice, Garlic, Cumin, Mustard seeds, Cucumber salad"
+    },
+    {
+        "name": "Smoked Tofu Butter Masala with Millet Rotis",
+        "category": "lunch",
+        "description": "Organic smoked tofu simmered in a cashew-tomato silk gravy, served alongside two gluten-free ragi-millet rotis.",
+        "calories": 510.0,
+        "protein_g": 26.0,
+        "carbs_g": 50.0,
+        "fat_g": 20.0,
+        "price": 269.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 16,
+        "ingredients": "Smoked tofu, Cashew paste, Tomatoes, Ragi flour, Jowar flour, Spices"
+    },
+    {
+        "name": "Grilled Lemon Herb Fish Fillet & Steamed Veggies",
+        "category": "lunch",
+        "description": "Pan-grilled river sole fillet basted with lemon parsley butter, served with steamed baby carrots, beans, and sweet potato mash.",
+        "calories": 470.0,
+        "protein_g": 42.0,
+        "carbs_g": 22.0,
+        "fat_g": 14.0,
+        "price": 399.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Fresh fish fillet, Lemon zest, Parsley, Sweet potato, French beans, Olive oil"
+    },
+
+    # =========================================================================
+    # DINNER (15 Diverse Options)
+    # =========================================================================
+    {
+        "name": "Grass-Fed Lean Mutton Seekh & Asparagus Platter",
+        "category": "dinner",
+        "description": "Grilled lean minced meat seekh skewers with grilled tender asparagus, roasted baby potatoes, and mint dip.",
+        "calories": 580.0,
+        "protein_g": 46.0,
+        "carbs_g": 42.0,
+        "fat_g": 24.0,
+        "price": 399.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 22,
+        "ingredients": "Lean minced meat, Fresh asparagus, Baby potatoes, Rosemary, Garlic, Olive oil"
+    },
+    {
+        "name": "Tuscan Grilled Chicken with Zucchini Noodles",
+        "category": "dinner",
+        "description": "Herb-crusted grilled chicken breast tossed with fresh spiralized zucchini, sun-dried tomatoes, pine nuts, and basil pesto.",
+        "calories": 460.0,
+        "protein_g": 42.0,
+        "carbs_g": 18.0,
+        "fat_g": 24.0,
+        "price": 349.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Chicken breast, Zucchini zoodles, Sun-dried tomatoes, Basil pesto, Pine nuts, Parmesan"
+    },
+    {
+        "name": "Lentil Dal Makhani & Brown Rice Bowl",
+        "category": "dinner",
+        "description": "Slow-cooked black lentils and kidney beans simmered in aromatic tomato spices, served with brown rice and cucumber raita.",
+        "calories": 480.0,
+        "protein_g": 22.0,
+        "carbs_g": 74.0,
+        "fat_g": 11.0,
+        "price": 239.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 20,
+        "ingredients": "Black lentils (urad), Kidney beans, Tomatoes, Ginger, Spices, Brown rice"
+    },
+    {
+        "name": "Crispy Sesame Tofu & Bok Choy Stir-Fry",
+        "category": "dinner",
+        "description": "Crispy pan-seared organic tofu, tender baby bok choy, snap peas, and shiitake mushrooms tossed in ginger tamari sauce.",
+        "calories": 430.0,
+        "protein_g": 24.0,
+        "carbs_g": 36.0,
+        "fat_g": 22.0,
+        "price": 279.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 16,
+        "ingredients": "Extra firm tofu, Baby bok choy, Shiitake mushrooms, Sesame oil, Tamari, Fresh ginger"
+    },
+    {
+        "name": "Paneer Tikka Masala & Multigrain Roti Combo",
+        "category": "dinner",
+        "description": "Tandoori grilled paneer chunks tossed in spiced aromatic onion-tomato gravy, served with 2 multigrain rotis and green salad.",
+        "calories": 520.0,
+        "protein_g": 28.0,
+        "carbs_g": 44.0,
+        "fat_g": 24.0,
+        "price": 289.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Paneer 180g, Multigrain flour, Tomato purée, Onions, Coriander, Kasoori methi"
+    },
+    {
+        "name": "Yellow Moong Dal & Spinach Khichdi with Raita",
+        "category": "dinner",
+        "description": "Easily digestible comfort bowl of yellow moong lentils, brown rice, fresh spinach, and mild cumin ghee tadka with curd raita.",
+        "calories": 420.0,
+        "protein_g": 20.0,
+        "carbs_g": 66.0,
+        "fat_g": 8.0,
+        "price": 219.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 15,
+        "ingredients": "Yellow moong dal, Brown rice, Baby spinach, Cumin, Ghee, Low-fat curd"
+    },
+    {
+        "name": "Herb-Crusted Grilled Basa Fish & Roasted Veggies",
+        "category": "dinner",
+        "description": "Tender grilled Basa fish coated in rosemary thyme garlic crust, served with roasted zucchini, bell peppers, and lemon wedge.",
+        "calories": 440.0,
+        "protein_g": 40.0,
+        "carbs_g": 18.0,
+        "fat_g": 16.0,
+        "price": 369.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Basa fillet 220g, Rosemary, Thyme, Garlic, Zucchini, Bell peppers, Olive oil"
+    },
+    {
+        "name": "Smoked Chicken Tikka with Green Mint Chutney & Salad",
+        "category": "dinner",
+        "description": "Clay oven roasted boneless chicken chunks marinated in mustard oil, yogurt, and degi mirch, served with fresh onion rings.",
+        "calories": 480.0,
+        "protein_g": 50.0,
+        "carbs_g": 16.0,
+        "fat_g": 18.0,
+        "price": 329.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 20,
+        "ingredients": "Chicken breast 250g, Mustard oil, Hung curd, Spices, Lemon, Mint chutney"
+    },
+    {
+        "name": "Kadhai Mushroom & Soya Chaap with Phulkas",
+        "category": "dinner",
+        "description": "Button mushrooms and roasted soya chunks tossed with crunchy bell peppers in freshly pounded kadhai masala, served with 2 phulkas.",
+        "calories": 460.0,
+        "protein_g": 26.0,
+        "carbs_g": 52.0,
+        "fat_g": 15.0,
+        "price": 259.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 16,
+        "ingredients": "Button mushrooms, Soya chaap, Bell peppers, Kadhai spices, Whole wheat flour"
+    },
+    {
+        "name": "Keto Garlic Butter Salmon & Steamed Broccoli",
+        "category": "dinner",
+        "description": "Pan-seared Atlantic salmon fillet glazed in herb garlic butter, served alongside crunchy steamed broccoli and lemon slices.",
+        "calories": 530.0,
+        "protein_g": 44.0,
+        "carbs_g": 6.0,
+        "fat_g": 34.0,
+        "price": 469.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Fresh salmon 200g, Steamed broccoli, Grass-fed butter, Garlic, Lemon"
+    },
+    {
+        "name": "Keto Paneer & Bell Pepper Skillet with Guacamole",
+        "category": "dinner",
+        "description": "Charred malai paneer cubes tossed in mexican seasoning and olive oil, served with fresh homemade guacamole dip.",
+        "calories": 490.0,
+        "protein_g": 26.0,
+        "carbs_g": 10.0,
+        "fat_g": 36.0,
+        "price": 299.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 14,
+        "ingredients": "Paneer 180g, Avocado guacamole, Bell peppers, Olive oil, Mexican spices"
+    },
+    {
+        "name": "Slow-Simmered Black Chana Curry & Quinoa",
+        "category": "dinner",
+        "description": "Nutrient-dense organic black chickpeas slow-simmered in ginger, garlic, and tomato reduction with fluffy quinoa.",
+        "calories": 470.0,
+        "protein_g": 23.0,
+        "carbs_g": 68.0,
+        "fat_g": 10.0,
+        "price": 229.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 16,
+        "ingredients": "Black chana, Quinoa, Ginger, Garlic, Tomato gravy, Fresh coriander"
+    },
+    {
+        "name": "Grilled Peri Peri Chicken Breast & Mashed Sweet Potato",
+        "category": "dinner",
+        "description": "Zesty bird's eye chili spiced chicken breast served with smooth cinnamon mashed sweet potatoes and charred asparagus.",
+        "calories": 510.0,
+        "protein_g": 46.0,
+        "carbs_g": 44.0,
+        "fat_g": 12.0,
+        "price": 339.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 18,
+        "ingredients": "Chicken breast 220g, Sweet potato, Peri peri seasoning, Asparagus, Olive oil"
+    },
+    {
+        "name": "Smoked Baingan Bharta with Bajra Roti & Salad",
+        "category": "dinner",
+        "description": "Charcoal roasted eggplant mashed and cooked with ginger, garlic, and green peas, paired with gluten-free pearl millet roti.",
+        "calories": 390.0,
+        "protein_g": 14.0,
+        "carbs_g": 58.0,
+        "fat_g": 12.0,
+        "price": 219.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 16,
+        "ingredients": "Roasted eggplant, Green peas, Bajra flour, Garlic, Mustard oil, Onions"
+    },
+    {
+        "name": "Mediterranean Stuffed Bell Peppers with Tofu & Wild Rice",
+        "category": "dinner",
+        "description": "Sweet red and yellow bell peppers baked with seasoned tofu, wild brown rice, pine nuts, and tomato coulis.",
+        "calories": 410.0,
+        "protein_g": 22.0,
+        "carbs_g": 48.0,
+        "fat_g": 14.0,
+        "price": 279.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 20,
+        "ingredients": "Bell peppers, Tofu, Wild rice, Pine nuts, Oregano, Olive oil"
+    },
+
+    # =========================================================================
+    # SNACKS (15 Diverse Options)
+    # =========================================================================
+    {
+        "name": "Artisanal Protein Power Energy Bites",
+        "category": "snack",
+        "description": "Handcrafted raw energy bites made with rolled oats, Medjool dates, organic whey isolate, chia seeds, and dark cocoa nibs.",
+        "calories": 180.0,
+        "protein_g": 12.0,
+        "carbs_g": 20.0,
+        "fat_g": 6.0,
+        "price": 119.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 5,
+        "ingredients": "Medjool dates, Rolled oats, Whey protein isolate, Cocoa nibs, Chia seeds"
+    },
+    {
+        "name": "Roasted Garlic Hummus & Crisp Veggie Sticks",
+        "category": "snack",
+        "description": "House-made roasted garlic chickpea hummus served with crunchy carrots, cucumbers, and bell pepper batons.",
+        "calories": 160.0,
+        "protein_g": 7.0,
+        "carbs_g": 18.0,
+        "fat_g": 7.0,
+        "price": 139.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1577906096429-f73c2c312435?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 5,
+        "ingredients": "Chickpeas, Tahini, Roasted garlic, Carrots, Cucumbers, Bell peppers, Olive oil"
+    },
+    {
+        "name": "Mixed Smoked Almonds & Walnuts Pack",
+        "category": "snack",
+        "description": "Dry-roasted California almonds and raw brain-boosting walnut halves with a touch of Himalayan pink salt.",
+        "calories": 200.0,
+        "protein_g": 6.0,
+        "carbs_g": 6.0,
+        "fat_g": 17.0,
+        "price": 159.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 2,
+        "ingredients": "Almonds, Walnuts, Himalayan pink salt"
+    },
+    {
+        "name": "Peri-Peri Roasted Himalayan Foxnuts (Makhana)",
+        "category": "snack",
+        "description": "Crunchy roasted lotus seeds tossed with spicy African bird's eye peri-peri seasoning and extra virgin olive oil.",
+        "calories": 140.0,
+        "protein_g": 5.0,
+        "carbs_g": 24.0,
+        "fat_g": 3.0,
+        "price": 109.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 3,
+        "ingredients": "Lotus seeds (Makhana), Peri-peri spices, Olive oil, Sea salt"
+    },
+    {
+        "name": "Tangy Sprouted Moong & Pomegranate Chaat",
+        "category": "snack",
+        "description": "Live sprouted green moong beans tossed with juicy ruby pomegranate pearls, diced tomatoes, chaat masala, and fresh lemon.",
+        "calories": 170.0,
+        "protein_g": 10.0,
+        "carbs_g": 28.0,
+        "fat_g": 2.0,
+        "price": 129.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 5,
+        "ingredients": "Sprouted moong, Pomegranate seeds, Tomatoes, Chaat masala, Coriander, Lemon"
+    },
+    {
+        "name": "Masala Boiled Eggs with Black Pepper (2 Eggs)",
+        "category": "snack",
+        "description": "Two soft-boiled farm fresh eggs seasoned with cracked Tellicherry black pepper, pink salt, and roasted cumin powder.",
+        "calories": 160.0,
+        "protein_g": 13.0,
+        "carbs_g": 2.0,
+        "fat_g": 11.0,
+        "price": 99.0,
+        "diet_type": "non_vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 5,
+        "ingredients": "2 Eggs, Tellicherry black pepper, Himalayan pink salt, Roasted cumin"
+    },
+    {
+        "name": "Cold-Pressed Whey Protein Berry Smoothie",
+        "category": "snack",
+        "description": "Chilled blend of whey isolate, fresh strawberries, wild blueberries, and unsweetened almond milk.",
+        "calories": 220.0,
+        "protein_g": 25.0,
+        "carbs_g": 18.0,
+        "fat_g": 3.0,
+        "price": 179.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 4,
+        "ingredients": "Whey protein isolate 25g, Strawberries, Blueberries, Almond milk"
+    },
+    {
+        "name": "Roasted Masala Chana & Pumpkin Seed Crunch",
+        "category": "snack",
+        "description": "Crunchy dry-roasted chickpeas and pumpkin seeds tossed in desi rock salt and amchur seasoning.",
+        "calories": 190.0,
+        "protein_g": 11.0,
+        "carbs_g": 22.0,
+        "fat_g": 7.0,
+        "price": 119.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 2,
+        "ingredients": "Roasted Bengal gram, Raw pumpkin seeds, Amchur powder, Rock salt"
+    },
+    {
+        "name": "Keto Cheddar Crisps & Guacamole Dip",
+        "category": "snack",
+        "description": "Oven-baked mature cheddar cheese crisps served with fresh chunky avocado guacamole and cilantro.",
+        "calories": 210.0,
+        "protein_g": 12.0,
+        "carbs_g": 3.0,
+        "fat_g": 18.0,
+        "price": 189.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 6,
+        "ingredients": "Aged cheddar cheese, Hass avocado, Lime, Cilantro, Jalapeño"
+    },
+    {
+        "name": "Chia Seed & Coconut Milk Pudding",
+        "category": "snack",
+        "description": "Silky organic chia pudding steeped in rich coconut milk, garnished with toasted coconut flakes and dried cranberries.",
+        "calories": 190.0,
+        "protein_g": 6.0,
+        "carbs_g": 16.0,
+        "fat_g": 12.0,
+        "price": 149.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 4,
+        "ingredients": "Chia seeds, Coconut milk, Dried cranberries, Toasted coconut"
+    },
+    {
+        "name": "Tandoori Grilled Paneer Finger Sticks",
+        "category": "snack",
+        "description": "Six finger skewers of spiced cottage cheese grilled in a tandoori oven, served with pudina curd chutney.",
+        "calories": 230.0,
+        "protein_g": 16.0,
+        "carbs_g": 6.0,
+        "fat_g": 16.0,
+        "price": 169.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 10,
+        "ingredients": "Fresh Paneer, Tandoori spices, Curd mint chutney, Chaat masala"
+    },
+    {
+        "name": "Greek Yogurt with Honey & Crushed Pistachios",
+        "category": "snack",
+        "description": "Creamy strained yogurt topped with single-origin wild forest honey and slivered Iranian pistachios.",
+        "calories": 180.0,
+        "protein_g": 15.0,
+        "carbs_g": 16.0,
+        "fat_g": 5.0,
+        "price": 159.0,
+        "diet_type": "vegetarian",
+        "image_url": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 3,
+        "ingredients": "Authentic Greek yogurt, Forest honey, Pistachios, Cardamom pinch"
+    },
+    {
+        "name": "Steamed Salted Edamame Pods",
+        "category": "snack",
+        "description": "Tender young green soybean pods gently steamed and sprinkled with flakey Maldon sea salt.",
+        "calories": 150.0,
+        "protein_g": 14.0,
+        "carbs_g": 10.0,
+        "fat_g": 5.0,
+        "price": 149.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 5,
+        "ingredients": "Young soybean pods (Edamame), Maldon sea salt crystals"
+    },
+    {
+        "name": "Keto Dark Chocolate Peanut Butter Fat Bombs",
+        "category": "snack",
+        "description": "85% dark cocoa artisan treats filled with creamy unsweetened peanut butter and roasted chia.",
+        "calories": 220.0,
+        "protein_g": 7.0,
+        "carbs_g": 4.0,
+        "fat_g": 20.0,
+        "price": 169.0,
+        "diet_type": "keto",
+        "image_url": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 3,
+        "ingredients": "85% dark chocolate, Natural peanut butter, Coconut oil, Stevia"
+    },
+    {
+        "name": "Crunchy Roasted Peanut & Tomato Chaat",
+        "category": "snack",
+        "description": "Classic Indian street-style roasted peanut chaat tossed with crunchy onions, juicy tomatoes, green chillies, and lime.",
+        "calories": 195.0,
+        "protein_g": 9.0,
+        "carbs_g": 14.0,
+        "fat_g": 12.0,
+        "price": 119.0,
+        "diet_type": "vegan",
+        "image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+        "prep_time_mins": 4,
+        "ingredients": "Roasted peanuts, Diced onions, Tomatoes, Fresh lime juice, Coriander, Chaat masala"
+    }
+]
+
+def init_db(force_reseed: bool = False):
+    Base.metadata.create_all(bind=engine)
+    db: Session = SessionLocal()
+    try:
+        count = db.query(FoodItem).count()
+        if count == 0 or force_reseed:
+            if force_reseed:
+                db.query(FoodItem).delete()
+            print("Seeding initial food catalog with 60 nutritious meals & INR prices...")
+            for meal_data in SAMPLE_MEALS:
+                meal = FoodItem(**meal_data)
+                db.add(meal)
+            db.commit()
+            print(f"Successfully seeded {len(SAMPLE_MEALS)} nutritious meals with INR prices!")
+        else:
+            # Sync / Upsert all items so new meals are automatically inserted
+            print(f"Syncing food database (found {count} existing records)...")
+            for meal_data in SAMPLE_MEALS:
+                existing = db.query(FoodItem).filter(FoodItem.name == meal_data["name"]).first()
+                if existing:
+                    for key, val in meal_data.items():
+                        setattr(existing, key, val)
+                else:
+                    db.add(FoodItem(**meal_data))
+            db.commit()
+            total_after = db.query(FoodItem).count()
+            print(f"Food catalog database updated! Total meals available: {total_after}")
+    finally:
+        db.close()
+
+if __name__ == "__main__":
+    init_db(force_reseed=True)
+

@@ -1,0 +1,114 @@
+name: NutriFlow AI Cloud-Native CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # 1. Automated Testing & Code Quality
+  test:
+    name: Backend Pytest & Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install flake8 pytest pytest-asyncio httpx
+
+      - name: Code Linting
+        run: |
+          # Stop build if syntax errors or undefined names exist
+          flake8 backend/app --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all errors as warnings
+          flake8 backend/app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run Backend Pytest Suite
+        env:
+          DATABASE_URL: sqlite:///./test.db
+          SECRET_KEY: test_secret_key_ci_cd
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/backend
+          pytest backend/tests/ -v --color=yes
+
+  # 2. Build & Push Docker Containers to AWS ECR
+  build-and-push:
+    name: Build & Push ECR Images
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push Backend Container
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/nutriflow-backend:$IMAGE_TAG -t $ECR_REGISTRY/nutriflow-backend:latest ./backend
+          docker push $ECR_REGISTRY/nutriflow-backend:$IMAGE_TAG
+          docker push $ECR_REGISTRY/nutriflow-backend:latest
+
+      - name: Build & Push Frontend Container
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/nutriflow-frontend:$IMAGE_TAG -t $ECR_REGISTRY/nutriflow-frontend:latest ./frontend
+          docker push $ECR_REGISTRY/nutriflow-frontend:$IMAGE_TAG
+          docker push $ECR_REGISTRY/nutriflow-frontend:latest
+
+  # 3. Rolling Deployment to AWS EKS
+  deploy:
+    name: Deploy to AWS EKS
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Update Kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --name nutriflow-cluster --region us-east-1
+
+      - name: Apply Kubernetes Manifests
+        run: |
+          kubectl apply -f devops/k8s/namespace.yaml
+          kubectl apply -f devops/k8s/
+          kubectl rollout restart deployment/nutriflow-backend -n nutriflow
+          kubectl rollout restart deployment/nutriflow-frontend -n nutriflow
+          kubectl rollout status deployment/nutriflow-backend -n nutriflow --timeout=120s
