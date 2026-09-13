@@ -13,37 +13,6 @@
 
 ---
 
-## 🏛️ System Architecture
-
-```mermaid
-flowchart TD
-    User([User Browser / Mobile]) -->|HTTPS / REST| Ingress[AWS ALB / NGINX Ingress Controller]
-    
-    subgraph K8s_Cluster [AWS EKS Kubernetes Cluster]
-        Ingress --> Frontend[Frontend Pods - NGINX SPA]
-        Ingress --> Backend[Backend Pods - FastAPI REST API]
-        
-        Backend --> Redis[(Redis Cache)]
-        Backend --> Recommender[AI & Macro Engine]
-        Backend --> OrderService[Order & Delivery Lifecycle]
-    end
-
-    subgraph AWS_Cloud [AWS Managed Services]
-        Backend --> RDS[(Amazon RDS PostgreSQL Multi-AZ)]
-        Backend --> S3[Amazon S3 Assets Bucket]
-        Backend -.-> Gemini[Google Gemini AI API]
-    end
-
-    subgraph DevOps_IaC [DevOps & Automation]
-        TF[Terraform IaC] -->|Provisions| AWS_Cloud
-        TF -->|Provisions| K8s_Cluster
-        Ansible[Ansible Playbooks] -->|Configures| K8s_Cluster
-        GHA[GitHub Actions] -->|CI/CD Build & Push| ECR[Amazon ECR]
-        GHA -->|Rolling Deployment| K8s_Cluster
-    end
-```
-
----
 
 ## 🔬 Scientific Nutrition & Clinical Health Engine
 
